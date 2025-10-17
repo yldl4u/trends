@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Hashtag Generator - Yldl4u</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.logo {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: #00c8ff;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #00c8ff55, 0 0 20px #00c8ff55; }
+  to { text-shadow: 0 0 20px #00c8ffcc, 0 0 40px #00c8ffaa; }
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #00c8ff44;
+  border-top: 6px solid #00c8ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px 0;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+input {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  padding: 10px;
+  border-radius: 8px;
+  width: 250px;
+  margin-right: 10px;
+}
+
+button {
+  background: #00c8ff;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #00a3cc;
+}
+
+#results {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.hashtag {
+  background: #161b22;
+  color: #00c8ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.hashtag:hover {
+  background: #00c8ff;
+  color: #000;
+}
+
+footer {
+  margin-top: 40px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+</style>
+</head>
+
+<body>
+  <div class="logo">Yldl4u</div>
+  <h1>Instagram Hashtag Generator</h1>
+  <p>Enter a topic to generate trending hashtags including <strong>#yldl4u</strong> 🔍</p>
+
+  <div>
+    <input type="text" id="topic" placeholder="e.g., travel, food">
+    <button onclick="generateHashtags()">Generate</button>
+  </div>
+
+  <div class="loader" id="loader"></div>
+  <div id="results"></div>
+
+  <footer>
+    Built with ❤️ by Yldl4u | Live hashtags powered by RapidAPI
+  </footer>
+
+<script>
+async function generateHashtags() {
+  const topic = document.getElementById('topic').value.trim();
+  if(!topic) { alert('Please enter a topic!'); return; }
+
+  const loader = document.getElementById('loader');
+  loader.style.display = 'block';
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
+
+  const apiKey = "3459324c23mshcdc1bd46445672cp1f593ajsnba9e01bfe7cf"; // তোমার key
+  const apiHost = "google-trends21.p.rapidapi.com"; // উদাহরণ host
+  const apiUrl = `https://${apiHost}/hashtags?topic=${encodeURIComponent(topic)}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': apiHost
+      }
+    });
+    const data = await response.json();
+
+    // ধরছি data.hashtags একটা array হিসেবে আছে
+    let hashtags = data.hashtags || [];
+
+    // সবসময় #yldl4u যোগ করব
+    if(!hashtags.includes("#yldl4u")) hashtags.push("#yldl4u");
+
+    if(hashtags.length === 0) {
+      hashtags = ["#yldl4u","#trending","#instagood","#viral"];
+    }
+
+    hashtags.forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'hashtag';
+      span.innerText = tag;
+      span.onclick = () => {
+        navigator.clipboard.writeText(tag);
+        alert(`${tag} copied!`);
+      };
+      resultsDiv.appendChild(span);
+    });
+
+  } catch(err) {
+    console.error(err);
+    alert('Error fetching hashtags. Showing demo hashtags.');
+
+    const demoHashtags = [
+      `#${topic}Life`,
+      `#${topic}Vibes`,
+      `#${topic}Daily`,
+      `#yldl4u`,
+      `#Insta${topic}`
+    ];
+    demoHashtags.forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'hashtag';
+      span.innerText = tag;
+      span.onclick = () => { navigator.clipboard.writeText(tag); alert(`${tag} copied!`); };
+      resultsDiv.appendChild(span);
+    });
+  } finally {
+    loader.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
