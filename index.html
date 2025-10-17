@@ -15,38 +15,19 @@ body {
   align-items: center;
   padding: 30px;
 }
-.logo {
-  font-size: 2.5em;
-  font-weight: 600;
-  color: #00c8ff;
-  letter-spacing: 2px;
-  margin-bottom: 5px;
-  animation: glow 2s ease-in-out infinite alternate;
-}
-@keyframes glow {
-  from { text-shadow: 0 0 10px #00c8ff55, 0 0 20px #00c8ff55; }
-  to { text-shadow: 0 0 20px #00c8ffcc, 0 0 40px #00c8ffaa; }
-}
-.loader {
-  width: 60px;
-  height: 60px;
-  border: 6px solid #00c8ff44;
-  border-top: 6px solid #00c8ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px 0;
-  display: none;
-}
-@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-input {background:#161b22;border:1px solid #30363d;color:#e6edf3;padding:10px;border-radius:8px;width:250px;margin-right:10px;}
-button {background:#00c8ff;border:none;color:#000;font-weight:bold;padding:10px 15px;border-radius:8px;cursor:pointer;}
-button:hover {background:#00a3cc;}
-#results {margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-.hashtag {background:#161b22;color:#00c8ff;padding:8px 12px;border-radius:8px;cursor:pointer;transition:0.2s;}
-.hashtag:hover {background:#00c8ff;color:#000;}
-#copyAll {margin-top:20px;padding:8px 15px;border-radius:8px;border:none;background:#00c8ff;color:#000;font-weight:bold;cursor:pointer;}
+.logo { font-size:2.5em; font-weight:600; color:#00c8ff; letter-spacing:2px; margin-bottom:5px; animation: glow 2s ease-in-out infinite alternate; }
+@keyframes glow { from {text-shadow:0 0 10px #00c8ff55,0 0 20px #00c8ff55;} to {text-shadow:0 0 20px #00c8ffcc,0 0 40px #00c8ffaa;} }
+input { background:#161b22; border:1px solid #30363d; color:#e6edf3; padding:10px; border-radius:8px; width:250px; margin-right:10px;}
+button { background:#00c8ff; border:none; color:#000; font-weight:bold; padding:10px 15px; border-radius:8px; cursor:pointer;}
+button:hover { background:#00a3cc;}
+#results { margin-top:30px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+.hashtag { background:#161b22; color:#00c8ff; padding:8px 12px; border-radius:8px; cursor:pointer; transition:0.2s;}
+.hashtag:hover { background:#00c8ff;color:#000;}
+#copyAll { margin-top:20px; padding:8px 15px; border-radius:8px; border:none; background:#00c8ff; color:#000; font-weight:bold; cursor:pointer;}
 #copyAll:hover {background:#00a3cc;}
-footer {margin-top:40px;font-size:13px;opacity:0.7;}
+footer{margin-top:40px;font-size:13px;opacity:0.7;}
+.loader { width:50px; height:50px; border:5px solid #00c8ff44; border-top:5px solid #00c8ff; border-radius:50%; animation: spin 1s linear infinite; display:none; margin:20px 0;}
+@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -64,44 +45,46 @@ footer {margin-top:40px;font-size:13px;opacity:0.7;}
 <script>
 function generateHashtags() {
   const topic = document.getElementById('topic').value.trim().toLowerCase();
-  if(!topic) { alert('Enter a topic!'); return; }
-  const loader = document.getElementById('loader');
-  const resultsDiv = document.getElementById('results');
-  loader.style.display='block';
-  resultsDiv.innerHTML='';
+  if(!topic){ alert('Enter a topic!'); return; }
 
-  setTimeout(() => {
-    const suffixes = [
+  const resultsDiv = document.getElementById('results');
+  const loader = document.getElementById('loader');
+  resultsDiv.innerHTML = '';
+  loader.style.display='block';
+
+  setTimeout(()=>{
+    const suffixes=[
       "life","daily","moments","insta","viral","world","love","fun","style","day",
       "vibes","real","time","trending","photo","pic","like","follow","cute","happy",
       "amazing","today","best","explore","fashion","travel","food","adventure","blog",
-      "fitness","music","selfie","beautiful","smile","instagood","happy","love","trend",
-      "instadaily","instamood","photography","picoftheday","photooftheday","funny","viralpost","lifestyle","loveit"
+      "fitness","music","selfie","beautiful","smile","instagood","happy","trend",
+      "instadaily","instamood","photography","picoftheday","photooftheday","funny",
+      "viralpost","lifestyle","loveit","hot","top","musthave","exploremore","wow"
     ];
 
     const hashtagsSet = new Set();
-
-    while(hashtagsSet.size < 49) { // 49, + 1 #yldl4u = 50
+    while(hashtagsSet.size < 49){ // 49 + #yldl4u
       const suffix = suffixes[Math.floor(Math.random()*suffixes.length)];
       hashtagsSet.add(topic + suffix);
     }
-
     const hashtags = Array.from(hashtagsSet);
-    hashtags.splice(24,0,"yldl4u"); // #yldl4u in middle
+    hashtags.splice(24,0,"yldl4u"); // middle
 
+    // create fragment to reduce DOM reflows
+    const fragment = document.createDocumentFragment();
     hashtags.forEach(tag=>{
-      const span=document.createElement('span');
+      const span = document.createElement('span');
       span.className='hashtag';
       span.innerText='#'+tag;
-      span.onclick=()=>{navigator.clipboard.writeText('#'+tag); alert(`#${tag} copied!`);};
-      resultsDiv.appendChild(span);
+      span.onclick=()=>{ navigator.clipboard.writeText('#'+tag); alert(`#${tag} copied!`); };
+      fragment.appendChild(span);
     });
-
+    resultsDiv.appendChild(fragment);
     loader.style.display='none';
-  },500);
+  },100); // minimal delay for smoothness
 }
 
-function copyAllHashtags() {
+function copyAllHashtags(){
   const allTags = Array.from(document.querySelectorAll('#results .hashtag')).map(e=>e.innerText).join(' ');
   navigator.clipboard.writeText(allTags);
   alert('All hashtags copied!');
