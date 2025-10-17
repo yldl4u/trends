@@ -16,7 +16,6 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 30px;
-  overflow-x: hidden;
 }
 
 .logo {
@@ -69,9 +68,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #00a3cc;
-}
+button:hover { background: #00a3cc; }
 
 #results {
   margin-top: 30px;
@@ -90,102 +87,91 @@ button:hover {
   transition: 0.2s;
 }
 
-.hashtag:hover {
+.hashtag:hover { background: #00c8ff; color: #000; }
+
+#copyAll {
+  margin-top: 20px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
   background: #00c8ff;
   color: #000;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-footer {
-  margin-top: 40px;
-  font-size: 13px;
-  opacity: 0.7;
-}
+#copyAll:hover { background: #00a3cc; }
+
+footer { margin-top: 40px; font-size: 13px; opacity: 0.7; }
 </style>
 </head>
 
 <body>
-  <div class="logo">Yldl4u</div>
-  <h1>Instagram Hashtag Generator</h1>
-  <p>Enter a topic to generate trending hashtags including <strong>#yldl4u</strong> 🔍</p>
+<div class="logo">Yldl4u</div>
+<h1>Instagram Hashtag Generator</h1>
+<p>Enter any topic & get 20 trending hashtags with <strong>#yldl4u</strong> in the middle 🔍</p>
 
-  <div>
-    <input type="text" id="topic" placeholder="e.g., travel, food">
-    <button onclick="generateHashtags()">Generate</button>
-  </div>
+<div>
+  <input type="text" id="topic" placeholder="e.g., travel, fashion, food">
+  <button onclick="generateHashtags()">Generate</button>
+</div>
 
-  <div class="loader" id="loader"></div>
-  <div id="results"></div>
+<div class="loader" id="loader"></div>
 
-  <footer>
-    Built with ❤️ by Yldl4u | Live hashtags powered by RapidAPI
-  </footer>
+<div id="results"></div>
+<button id="copyAll" onclick="copyAllHashtags()">Copy All Hashtags</button>
+
+<footer>Built with ❤️ by Yldl4u | 100% frontend demo</footer>
 
 <script>
-async function generateHashtags() {
+function generateHashtags() {
   const topic = document.getElementById('topic').value.trim();
   if(!topic) { alert('Please enter a topic!'); return; }
 
   const loader = document.getElementById('loader');
-  loader.style.display = 'block';
   const resultsDiv = document.getElementById('results');
+  loader.style.display = 'block';
   resultsDiv.innerHTML = '';
 
-  const apiKey = "3459324c23mshcdc1bd46445672cp1f593ajsnba9e01bfe7cf"; // তোমার key
-  const apiHost = "google-trends21.p.rapidapi.com"; // উদাহরণ host
-  const apiUrl = `https://${apiHost}/hashtags?topic=${encodeURIComponent(topic)}`;
+  // simulate loading
+  setTimeout(() => {
+    const baseHashtags = [
+      topic, "love", "instagood", "photooftheday", "fashion", "beautiful",
+      "happy", "cute", "tbt", "followme", "picoftheday", "instadaily",
+      "summer", "art", "nature", "like4like", "travel", "style", "fitness"
+    ];
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': apiHost
-      }
-    });
-    const data = await response.json();
-
-    // ধরছি data.hashtags একটা array হিসেবে আছে
-    let hashtags = data.hashtags || [];
-
-    // সবসময় #yldl4u যোগ করব
-    if(!hashtags.includes("#yldl4u")) hashtags.push("#yldl4u");
-
-    if(hashtags.length === 0) {
-      hashtags = ["#yldl4u","#trending","#instagood","#viral"];
+    // shuffle
+    for (let i = baseHashtags.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [baseHashtags[i], baseHashtags[j]] = [baseHashtags[j], baseHashtags[i]];
     }
+
+    // take first 19
+    const hashtags = baseHashtags.slice(0,19);
+
+    // insert #yldl4u in the middle
+    hashtags.splice(9,0,"yldl4u"); // position 10 (0-indexed)
 
     hashtags.forEach(tag => {
       const span = document.createElement('span');
       span.className = 'hashtag';
-      span.innerText = tag;
+      span.innerText = '#'+tag;
       span.onclick = () => {
-        navigator.clipboard.writeText(tag);
-        alert(`${tag} copied!`);
+        navigator.clipboard.writeText('#'+tag);
+        alert(`#${tag} copied!`);
       };
       resultsDiv.appendChild(span);
     });
 
-  } catch(err) {
-    console.error(err);
-    alert('Error fetching hashtags. Showing demo hashtags.');
-
-    const demoHashtags = [
-      `#${topic}Life`,
-      `#${topic}Vibes`,
-      `#${topic}Daily`,
-      `#yldl4u`,
-      `#Insta${topic}`
-    ];
-    demoHashtags.forEach(tag => {
-      const span = document.createElement('span');
-      span.className = 'hashtag';
-      span.innerText = tag;
-      span.onclick = () => { navigator.clipboard.writeText(tag); alert(`${tag} copied!`); };
-      resultsDiv.appendChild(span);
-    });
-  } finally {
     loader.style.display = 'none';
-  }
+  }, 800);
+}
+
+function copyAllHashtags() {
+  const allTags = Array.from(document.querySelectorAll('#results .hashtag')).map(e=>e.innerText).join(' ');
+  navigator.clipboard.writeText(allTags);
+  alert('All hashtags copied!');
 }
 </script>
 </body>
