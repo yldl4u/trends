@@ -4,10 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Instagram Hashtag Generator - Yldl4u</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
 body {
   font-family: "Poppins", sans-serif;
   background: #0d1117;
@@ -17,7 +15,6 @@ body {
   align-items: center;
   padding: 30px;
 }
-
 .logo {
   font-size: 2.5em;
   font-weight: 600;
@@ -26,12 +23,10 @@ body {
   margin-bottom: 5px;
   animation: glow 2s ease-in-out infinite alternate;
 }
-
 @keyframes glow {
   from { text-shadow: 0 0 10px #00c8ff55, 0 0 20px #00c8ff55; }
   to { text-shadow: 0 0 20px #00c8ffcc, 0 0 40px #00c8ffaa; }
 }
-
 .loader {
   width: 60px;
   height: 60px;
@@ -42,130 +37,68 @@ body {
   margin: 20px 0;
   display: none;
 }
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-input {
-  background: #161b22;
-  border: 1px solid #30363d;
-  color: #e6edf3;
-  padding: 10px;
-  border-radius: 8px;
-  width: 250px;
-  margin-right: 10px;
-}
-
-button {
-  background: #00c8ff;
-  border: none;
-  color: #000;
-  font-weight: bold;
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:hover { background: #00a3cc; }
-
-#results {
-  margin-top: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.hashtag {
-  background: #161b22;
-  color: #00c8ff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.hashtag:hover { background: #00c8ff; color: #000; }
-
-#copyAll {
-  margin-top: 20px;
-  padding: 8px 15px;
-  border-radius: 8px;
-  border: none;
-  background: #00c8ff;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#copyAll:hover { background: #00a3cc; }
-
-footer { margin-top: 40px; font-size: 13px; opacity: 0.7; }
+@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+input {background:#161b22;border:1px solid #30363d;color:#e6edf3;padding:10px;border-radius:8px;width:250px;margin-right:10px;}
+button {background:#00c8ff;border:none;color:#000;font-weight:bold;padding:10px 15px;border-radius:8px;cursor:pointer;}
+button:hover {background:#00a3cc;}
+#results {margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.hashtag {background:#161b22;color:#00c8ff;padding:8px 12px;border-radius:8px;cursor:pointer;transition:0.2s;}
+.hashtag:hover {background:#00c8ff;color:#000;}
+#copyAll {margin-top:20px;padding:8px 15px;border-radius:8px;border:none;background:#00c8ff;color:#000;font-weight:bold;cursor:pointer;}
+#copyAll:hover {background:#00a3cc;}
+footer {margin-top:40px;font-size:13px;opacity:0.7;}
 </style>
 </head>
-
 <body>
 <div class="logo">Yldl4u</div>
 <h1>Instagram Hashtag Generator</h1>
-<p>Enter any topic & get 20 trending hashtags with <strong>#yldl4u</strong> in the middle 🔍</p>
-
 <div>
-  <input type="text" id="topic" placeholder="e.g., travel, fashion, food">
+  <input type="text" id="topic" placeholder="Enter any topic">
   <button onclick="generateHashtags()">Generate</button>
 </div>
-
 <div class="loader" id="loader"></div>
-
 <div id="results"></div>
 <button id="copyAll" onclick="copyAllHashtags()">Copy All Hashtags</button>
-
-<footer>Built with ❤️ by Yldl4u | 100% frontend demo</footer>
+<footer>Built with ❤️ by Yldl4u</footer>
 
 <script>
 function generateHashtags() {
-  const topic = document.getElementById('topic').value.trim();
-  if(!topic) { alert('Please enter a topic!'); return; }
-
+  const topic = document.getElementById('topic').value.trim().toLowerCase();
+  if(!topic) { alert('Enter a topic!'); return; }
   const loader = document.getElementById('loader');
   const resultsDiv = document.getElementById('results');
-  loader.style.display = 'block';
-  resultsDiv.innerHTML = '';
+  loader.style.display='block';
+  resultsDiv.innerHTML='';
 
-  // simulate loading
   setTimeout(() => {
-    const baseHashtags = [
-      topic, "love", "instagood", "photooftheday", "fashion", "beautiful",
-      "happy", "cute", "tbt", "followme", "picoftheday", "instadaily",
-      "summer", "art", "nature", "like4like", "travel", "style", "fitness"
+    const suffixes = [
+      "life","daily","moments","insta","viral","world","love","fun","style","day",
+      "vibes","real","time","trending","photo","pic","like","follow","cute","happy",
+      "amazing","today","best","explore","fashion","travel","food","adventure","blog",
+      "fitness","music","selfie","beautiful","smile","instagood","happy","love","trend",
+      "instadaily","instamood","photography","picoftheday","photooftheday","funny","viralpost","lifestyle","loveit"
     ];
 
-    // shuffle
-    for (let i = baseHashtags.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [baseHashtags[i], baseHashtags[j]] = [baseHashtags[j], baseHashtags[i]];
+    const hashtagsSet = new Set();
+
+    while(hashtagsSet.size < 49) { // 49, + 1 #yldl4u = 50
+      const suffix = suffixes[Math.floor(Math.random()*suffixes.length)];
+      hashtagsSet.add(topic + suffix);
     }
 
-    // take first 19
-    const hashtags = baseHashtags.slice(0,19);
+    const hashtags = Array.from(hashtagsSet);
+    hashtags.splice(24,0,"yldl4u"); // #yldl4u in middle
 
-    // insert #yldl4u in the middle
-    hashtags.splice(9,0,"yldl4u"); // position 10 (0-indexed)
-
-    hashtags.forEach(tag => {
-      const span = document.createElement('span');
-      span.className = 'hashtag';
-      span.innerText = '#'+tag;
-      span.onclick = () => {
-        navigator.clipboard.writeText('#'+tag);
-        alert(`#${tag} copied!`);
-      };
+    hashtags.forEach(tag=>{
+      const span=document.createElement('span');
+      span.className='hashtag';
+      span.innerText='#'+tag;
+      span.onclick=()=>{navigator.clipboard.writeText('#'+tag); alert(`#${tag} copied!`);};
       resultsDiv.appendChild(span);
     });
 
-    loader.style.display = 'none';
-  }, 800);
+    loader.style.display='none';
+  },500);
 }
 
 function copyAllHashtags() {
